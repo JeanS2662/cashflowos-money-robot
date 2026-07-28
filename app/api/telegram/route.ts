@@ -349,6 +349,8 @@ async function answerWithTools(chatId: number, text: string, apiKey: string): Pr
     `triage) and ACTION tools that DO things. Chain tools when useful (e.g. who_to_followup → ` +
     `draft_followup; or find an invoice → mark_invoice_paid). Keep replies short. Telegram formatting: ` +
     `<b>,<i>,<code> only.\n` +
+    `TODAY is ${todayISO()} (ISO yyyy-mm-dd). Resolve every relative date — "today", "tomorrow", ` +
+    `"Friday", "next week", "end of month" — against THIS date. Never infer the date from anything else.\n` +
     `GROUNDING: always base money/pipeline answers on a tool result — never guess a number.\n` +
     `ACTING — the autonomy dial: for add_task / add_lead / a small log_expense the tool runs it ` +
     `immediately; tell the owner it's done and include the exact /undo-<id> the tool returned. For ` +

@@ -3,6 +3,7 @@ import { supabase, supabaseConfigured } from '@/lib/supabase'
 import { sendMessage } from '@/lib/telegram'
 import { getRecords, getFunnel, rm, todayISO, type Rec } from '@/lib/records'
 import { propose, proposeAndNotify, runAutopilot } from '@/lib/actions'
+import { bumpDailyCounter } from '@/lib/bot-memory'
 import { SCHEDULED, type ProposalDraft } from '@/agents/registry'
 
 // 🔒 Don't edit — this keeps your robot safe.
@@ -38,6 +39,21 @@ function recipients(): string[] {
 const sum = (rows: Rec[]) => rows.reduce((s, r) => s + Number(r.amount || 0), 0)
 const PAID = new Set(['paid', 'done', 'closed', 'reversed'])
 
+// Whole days a due date is past today (>=0). Same maths as lib/bot-tools.ts.
+const daysLate = (due: string, today: string) =>
+  Math.max(0, Math.floor((Date.parse(today) - Date.parse(due)) / 86_400_000))
+
+// SEND-ONCE-PER-DAY FLAG.
+// Two schedulers now point at this route (Vercel Cron, plus an external pinger for
+// punctual 08:00) — without a flag you'd get the brief twice. We reuse the existing
+// bumpDailyCounter, but under a SENTINEL chat_id, NOT the owner's: that helper
+// replaces the whole counters bag on each write, so sharing the owner's row would
+// silently reset the Vault's daily vision cost cap every morning.
+// Not fully atomic (read-then-write): if both schedulers land in the same few
+// milliseconds a duplicate is still possible. That is a cosmetic double-message,
+// never a double-action — the agent sweep dedupes on idempotency_key regardless.
+const BRIEF_FLAG_CHAT_ID = 0
+
 export async function GET(req: Request) {
   // ---- FAIL-CLOSED Bearer. Unset secret ⇒ 401 (never open). ----
   const secret = process.env.CRON_SECRET?.trim()
@@ -45,6 +61,17 @@ export async function GET(req: Request) {
   if (!authed) return new Response('forbidden', { status: 401 })
 
   const today = todayISO()
+
+  // ---- SEND ONCE. ?force=1 re-sends (still behind the Bearer above) so you can
+  // prove the brief works without waiting until tomorrow. ----
+  const force = new URL(req.url).searchParams.get('force') === '1'
+  if (!force) {
+    const nth = await bumpDailyCounter(BRIEF_FLAG_CHAT_ID, 'brief', today)
+    if (nth > 1) {
+      return Response.json({ ok: true, skipped: 'already sent today', day: today })
+    }
+  }
+
   const rows = await getRecords()
 
   // ① THE MONEY ROW (mirrors the Dashboard).
@@ -65,7 +92,20 @@ export async function GET(req: Request) {
     proposed = (data ?? []) as any[]
   }
 
-  const brief = buildBrief(f, { cashIn, cashOut, owed }, proposed)
+  // ① WHO TO CHASE — the same unpaid filter the bot's list_owed tool uses
+  // (lib/bot-tools.ts), so the brief and "who owes me?" can never disagree.
+  // Oldest debt first, then biggest — that's the order you'd work them in.
+  const chase = rows
+    .filter((r) => r.category === 'cash_in' && !PAID.has((r.status || '').toLowerCase()))
+    .map((r) => ({
+      who: String(r.meta?.customer || r.title),
+      amount: Number(r.amount || 0),
+      due_date: r.due_date,
+      days_late: r.due_date && r.due_date < today ? daysLate(r.due_date, today) : 0,
+    }))
+    .sort((a, b) => b.days_late - a.days_late || b.amount - a.amount)
+
+  const brief = buildBrief(f, { cashIn, cashOut, owed }, proposed, chase)
 
   // ② Optional Jarvis-Oyen narrative — a warm chief-of-staff paragraph. Only when a
   //    key is set; its absence NEVER blocks the mandated brief above.
@@ -134,10 +174,13 @@ export async function GET(req: Request) {
 
 // The mandated brief text — the funnel, the money, and what needs a YES. Plain,
 // deterministic, and always available (no API key required).
+type Chase = { who: string; amount: number; due_date: string | null; days_late: number }
+
 function buildBrief(
   f: ReturnType<typeof getFunnel>,
   money: { cashIn: number; cashOut: number; owed: number },
   proposed: { agent_key: string; payload: any }[],
+  chase: Chase[] = [],
 ): string {
   const p = (i: number) => (f.pct[i] != null ? `${f.pct[i]}%` : '—')
   const funnelLine =
@@ -171,10 +214,33 @@ function buildBrief(
     if (proposed.length > 5) ask += `\n…and ${proposed.length - 5} more`
   }
 
+  // WHO TO CHASE — names, not just a total. Late ones lead; the rest show their due
+  // date so a not-yet-due invoice never reads like a problem.
+  let chaseBlock: string
+  if (!chase.length) {
+    chaseBlock = `✅ Nobody owes you right now.`
+  } else {
+    const total = chase.reduce((s, c) => s + c.amount, 0)
+    const lines = chase
+      .slice(0, 5)
+      .map((c) => {
+        const when = c.days_late > 0
+          ? `${c.days_late}d late`
+          : c.due_date
+            ? `due ${c.due_date.slice(5)}`
+            : 'no due date'
+        return `• ${c.who} — <b>${rm(c.amount)}</b> (${when})`
+      })
+      .join('\n')
+    chaseBlock = `${chase.length} unpaid · <b>${rm(total)}</b>\n${lines}`
+    if (chase.length > 5) chaseBlock += `\n…and ${chase.length - 5} more`
+  }
+
   return (
     `☀️ <b>CashFlowOS — morning brief</b>\n\n` +
     `<b>The river</b>\n${funnelLine}\n\n` +
     `<b>The money</b>\n${moneyLine}\n\n` +
+    `💸 <b>Who to chase</b>\n${chaseBlock}\n\n` +
     `<b>Needs you</b>\n${ask}`
   )
 }

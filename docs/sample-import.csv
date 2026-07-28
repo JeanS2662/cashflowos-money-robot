@@ -1,0 +1,16 @@
+title,category,amount,status,due_date,notes,customer,platform,format,views,potential,next
+Payment — Bright Cafe retainer,cash_in,5000,paid,2026-07-18,Received via bank transfer,Bright Cafe,,,,,
+Invoice #021 — Lai Holdings,cash_in,2400,waiting,2026-07-15,Overdue — chase this,Lai Holdings,,,,,chase payment
+Invoice #022 — Cendana Group,cash_in,3200,waiting,2026-08-02,"Sent, due next week",Cendana Group,,,,,
+Meta Ads — July,cash_out,450,paid,2026-07-20,Monthly ad spend,,,,,,
+Lunch with client,cash_out,45,filed,2026-07-22,Auto-filed by the Vault,,,,,,
+Notion annual plan,cash_out,38,paid,2026-07-10,Software subscription,,,,,,
+Daniel Tan — Tan F&B,lead,4500,new,2026-07-28,Came in from the IG ad,,,,,4500,qualify
+Aisha Rahman — Acme,lead,5000,contacted,2026-07-26,"Warm inbound, replied fast",,,,,5000,book demo
+Keith Lim — Cendana,lead,6000,appointment,2026-07-25,Demo booked Thursday 3pm,,,,,6000,run demo
+Beta Trading,lead,3200,closed,,Won — moving to onboarding,,,,,3200,onboard
+Mei Wong,lead,2000,nurture,2026-08-12,Went quiet — long-term nurture,,,,,2000,monthly check-in
+Bright Cafe,customer,0,active,,Onboarding this week,Bright Cafe,,,,,kickoff call
+Caremetic Sdn Bhd,customer,1500,active,2026-07-30,Retainer client owes this,Caremetic Sdn Bhd,,,,,send report
+Reel: 3 ways AI saves you time,content,0,posted,2026-07-21,Best performer this month,,IG,reel,12000,,
+Case study carousel,content,0,scheduled,2026-07-26,For LinkedIn,,LinkedIn,carousel,0,,

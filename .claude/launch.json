@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "cashflowos-v2", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "-p", "3007"], "port": 3007 }
+  ]
+}

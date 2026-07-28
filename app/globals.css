@@ -1,0 +1,287 @@
+:root {
+  /* ============================================================
+     CLAUDE MALAYSIA — canonical brand tokens
+     (source of truth: claudemalaysia.com/brand · lib/brand/tokens.ts)
+     Warm-paper light theme: ~60% paper / 25% ink / 12% clay / 3% accent.
+     ============================================================ */
+  --paper:   #FAF7F2;   /* page ground            */
+  --paper-2: #F2EBDF;   /* deeper cream / sidebar */
+  --card:    #FFFDF9;   /* raised card surface    */
+
+  --ink:       #211C16; /* primary text           */
+  --ink-soft:  #5F564B; /* secondary text         */
+  --ink-faint: #978C7B; /* faint labels / micro-caps */
+
+  --clay:      #D97757;             /* primary accent       */
+  --clay-deep: #BE5C3B;             /* hover / pressed      */
+  --clay-tint:   rgba(217,119,87,.12);
+  --clay-tint-2: rgba(217,119,87,.20);
+
+  --line:   rgba(33,28,22,.10);
+  --line-2: rgba(33,28,22,.18);
+
+  /* autonomy zones: 🟢 autopilot · 🟡 ask · 🔴 never */
+  --sage:  #4B7A5A;
+  --honey: #B6802A;
+  --rust:  #A9533F;
+
+  /* radius scale */
+  --r-8:    8px;
+  --r-13:   13px;
+  --r-20:   20px;
+  --r-28:   28px;
+  --r-pill: 999px;
+
+  /* ============================================================
+     Back-compat aliases — the app's existing class + inline styles
+     reference these names; they now point at the warm-paper palette.
+     (Contrast tuned so body text stays AA on paper.)
+     ============================================================ */
+  --bg:       var(--paper);
+  --surface:  var(--card);
+  --surface2: var(--paper-2);
+  --border:   var(--line);
+  --text:     var(--ink);
+  --muted:    var(--ink-soft);
+  --dim:      #6E655A;          /* readable "faint" (AA on paper) */
+  --amber:    var(--clay);      /* the old accent is now clay     */
+
+  /* funnel river fills (Views → Leads → Appointments → Closed → Nurture),
+     retuned to read as bars on warm paper. */
+  --f-views:   #6E96C4;
+  --f-leads:   var(--honey);
+  --f-appts:   #8A6BB0;
+  --f-closed:  var(--sage);
+  --f-nurture: var(--rust);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+  color: var(--ink);
+  background: var(--clay-tint);
+  padding: 0.08em 0.36em;
+  border-radius: var(--r-8);
+}
+
+.app { display: flex; min-height: 100vh; }
+.side { width: 212px; flex-shrink: 0; background: var(--paper-2); border-right: 1px solid var(--line-2); padding: 18px; display: flex; flex-direction: column; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; color: var(--clay-deep); margin-bottom: 22px; }
+.brand .logo { width: 26px; height: 26px; border-radius: var(--r-8); background: var(--clay); display: grid; place-items: center; font-size: 15px; }
+
+/* sidebar nav, grouped under micro-cap section labels */
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav-group { margin-bottom: 14px; }
+.nav-group:last-child { margin-bottom: 0; }
+.nav-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 6px 11px; }
+.nav a { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 11px; border-radius: var(--r-8); color: var(--ink-soft); text-decoration: none; font-size: 14px; }
+.nav a:hover { background: rgba(33,28,22,.05); color: var(--ink); }
+.nav a.active { background: var(--clay-tint); color: var(--clay-deep); font-weight: 600; }
+.nav-badge { font-size: 11px; font-weight: 700; line-height: 1; min-width: 18px; height: 18px; padding: 0 5px; display: inline-grid; place-items: center; border-radius: var(--r-pill); background: var(--clay); color: #FFFDF9; }
+.hint { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--dim); line-height: 1.5; }
+
+.main { flex: 1; min-width: 0; padding: 30px 34px; }
+.ph { font-size: 22px; font-weight: 700; margin: 0; color: var(--ink); }
+.cap { color: var(--dim); font-size: 14px; margin: 4px 0 24px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); padding: 16px; }
+.stat .l { color: var(--ink-soft); font-size: 13px; margin: 0 0 6px; }
+.stat .v { font-size: 26px; font-weight: 700; margin: 0; color: var(--ink); }
+.stat.yes { border-color: var(--clay); background: var(--clay-tint); }
+.stat.yes .v { color: var(--clay-deep); }
+
+.tbl { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); overflow: hidden; }
+.tbl th, .tbl td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink); }
+.tbl th { color: var(--ink-soft); font-weight: 600; font-size: 12px; }
+.tbl tr:last-child td { border-bottom: none; }
+
+.pill { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: var(--r-8); font-weight: 600; background: var(--paper-2); color: var(--ink-soft); }
+/* top-of-funnel / in-progress (blue) */
+.pill.open, .pill.new, .pill.contacted, .pill.waiting, .pill.active, .pill.scheduled { background: rgba(90,140,190,.16); color: #2C5E8A; }
+/* attention / pending → 🟡 honey */
+.pill.pending, .pill.draft, .pill.proposed, .pill.appointment { background: rgba(182,128,42,.18); color: #6E521A; }
+/* done / good → 🟢 sage */
+.pill.won, .pill.done, .pill.paid, .pill.closed, .pill.filed, .pill.posted, .pill.executed, .pill.approved { background: rgba(75,122,90,.16); color: #2E5A40; }
+/* problem / overdue → 🔴 rust */
+.pill.lost, .pill.overdue, .pill.rejected, .pill.failed, .pill.expired { background: rgba(169,83,63,.16); color: #8A3E2D; }
+/* nurture / cold (neutral ink) */
+.pill.nurture { background: var(--paper-2); color: var(--ink-soft); }
+
+.cols { display: flex; gap: 12px; }
+.col { flex: 1; min-width: 0; }
+.col h3 { font-size: 13px; color: var(--ink-soft); font-weight: 600; margin: 0 0 10px; text-transform: capitalize; }
+.kc { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); padding: 10px 11px; margin-bottom: 8px; }
+.kc .t { font-size: 13px; margin: 0; color: var(--ink); }
+.kc .s { font-size: 12px; color: var(--dim); margin: 2px 0 0; }
+
+.empty { color: var(--dim); font-size: 14px; padding: 26px; border: 1px dashed var(--line-2); border-radius: var(--r-13); text-align: center; line-height: 1.6; }
+/* banners — soft paper alerts. base = 🔴 rust error; .info = blue; .warn = 🟡 honey */
+.banner { background: rgba(169,83,63,.10); border: 1px solid rgba(169,83,63,.30); color: #7C3A2B; border-radius: var(--r-13); padding: 12px 14px; font-size: 13px; line-height: 1.55; margin-bottom: 20px; }
+.banner code { color: var(--ink); background: rgba(33,28,22,.06); }
+.banner.info { background: rgba(90,140,190,.10); border-color: rgba(90,140,190,.32); color: #2C5478; }
+.banner.warn { background: rgba(182,128,42,.12); border-color: rgba(182,128,42,.34); color: #6E521A; }
+
+/* ============================================================
+   THE FUNNEL BAR — the whole-business river on the Dashboard.
+   5 coloured segments (Views → Leads → Appointments → Closed → Nurture),
+   each sized to its share, with the stage-to-stage conversion % between them.
+   ============================================================ */
+.funnel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); padding: 18px; margin-bottom: 24px; }
+.funnel h2 { font-size: 14px; color: var(--ink-soft); font-weight: 600; margin: 0 0 14px; }
+.funnel-bar { display: flex; align-items: stretch; gap: 6px; }
+.fseg { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.fseg .fbar { width: 100%; height: 10px; border-radius: 5px; }
+.fseg .fnum { font-size: 20px; font-weight: 700; margin: 8px 0 2px; color: var(--ink); }
+.fseg .flabel { font-size: 11px; color: var(--dim); text-align: center; }
+.fseg.views  .fbar { background: var(--f-views); }
+.fseg.leads  .fbar { background: var(--f-leads); }
+.fseg.appts  .fbar { background: var(--f-appts); }
+.fseg.closed .fbar { background: var(--f-closed); }
+.fseg.nurture .fbar { background: var(--f-nurture); }
+.fconv { display: grid; place-items: center; padding: 0 2px; }
+.fconv .p { font-size: 11px; color: var(--ink-soft); background: var(--paper-2); border-radius: var(--r-pill); padding: 2px 7px; white-space: nowrap; }
+.fconv .arw { font-size: 10px; color: var(--dim); margin-top: 4px; }
+
+/* ============================================================
+   MOBILE BOTTOM NAV — the Day-1 lunch-photo bar. Hidden on desktop, shown ≤768px.
+   ============================================================ */
+.bottomnav { display: none; }
+.ms-backdrop { display: none; }
+
+@media (max-width: 768px) {
+  .app { display: block; }
+  .side { display: none; }                 /* desktop sidebar hidden on phones */
+  .main { padding: 18px 16px 84px; }        /* leave room for the bottom bar */
+
+  /* Tables collapse into stacked cards. Each <td> shows its column via data-label. */
+  .tbl, .tbl thead, .tbl tbody, .tbl tr, .tbl th, .tbl td { display: block; }
+  .tbl { border: none; background: none; }
+  .tbl thead { position: absolute; left: -9999px; }   /* hide the header row */
+  .tbl tr { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); margin-bottom: 10px; padding: 4px 2px; }
+  .tbl td { border: none; display: flex; justify-content: space-between; gap: 12px; padding: 8px 14px; }
+  .tbl td::before { content: attr(data-label); color: var(--ink-soft); font-size: 12px; flex-shrink: 0; }
+
+  .cols { flex-direction: column; }         /* stage columns stack */
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .funnel-bar { gap: 3px; }
+  .fseg .fnum { font-size: 16px; }
+  .fseg .flabel { font-size: 10px; }
+  .fconv .p { padding: 2px 4px; font-size: 10px; }
+
+  /* the fixed bottom tab bar */
+  .bottomnav {
+    display: flex;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: var(--card); border-top: 1px solid var(--line-2);
+    box-shadow: 0 -4px 18px rgba(33,28,22,.06);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  .bottomnav a,
+  .bottomnav .bn-more {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 0; text-decoration: none; color: var(--ink-soft); font-size: 10px;
+    min-height: 48px;                       /* thumb-size touch target */
+    background: none; border: none; cursor: pointer; font-family: inherit;
+  }
+  .bottomnav a .ico, .bottomnav .bn-more .ico { font-size: 19px; line-height: 1; }
+  .bottomnav a.active, .bottomnav .bn-more.active { color: var(--clay-deep); }
+}
+
+/* ============================================================
+   THE "MORE" SHEET — slide-up sheet (MoreSheet.tsx) holding the rest of the
+   tabs so every one of the 10 sections is reachable on a phone.
+   Rendered only when open; the trigger lives in the phone bottom bar.
+   ============================================================ */
+.ms-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(33,28,22,.42);
+  display: flex; align-items: flex-end;
+  animation: ms-fade 0.16s ease-out;
+}
+.ms-panel {
+  width: 100%;
+  background: var(--card);
+  border-top: 1px solid var(--line-2);
+  border-radius: var(--r-20) var(--r-20) 0 0;
+  padding: 10px 16px calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 40px rgba(33,28,22,.20);
+  animation: ms-rise 0.22s cubic-bezier(.22,.61,.36,1);
+}
+.ms-handle { width: 40px; height: 4px; border-radius: var(--r-pill); background: var(--line-2); margin: 0 auto 12px; }
+.ms-title { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); margin: 0 2px 12px; }
+.ms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ms-grid a {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; color: var(--ink); font-size: 12px; font-weight: 500;
+  padding: 16px 8px; background: var(--paper-2); border: 1px solid transparent; border-radius: var(--r-13);
+  text-align: center; min-height: 74px;
+}
+.ms-grid a .ms-ico { font-size: 22px; line-height: 1; }
+.ms-grid a.active { background: var(--clay-tint); border-color: var(--clay); color: var(--clay-deep); }
+.ms-close {
+  width: 100%; margin-top: 14px; padding: 13px; border: 1px solid var(--line-2);
+  background: none; color: var(--ink-soft); font-size: 14px; font-weight: 600; font-family: inherit;
+  border-radius: var(--r-13); cursor: pointer;
+}
+.ms-close:hover { background: rgba(33,28,22,.04); }
+
+@keyframes ms-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes ms-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Safety: never let the sheet linger if the viewport grows to desktop mid-open. */
+@media (min-width: 769px) { .ms-backdrop { display: none !important; } }
+
+/* ---- AI Employees registry cards ---- */
+.agent-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); padding: 16px 18px; margin-bottom: 12px; }
+.ac-name { font-size: 15px; font-weight: 700; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--ink); }
+.ac-role { color: var(--ink-soft); font-size: 13px; line-height: 1.5; margin: 0; }
+.ac-lastrun { color: var(--dim); font-size: 12px; margin: 8px 0 0; }
+
+/* ---- Vault grid (receipts & docs via short-lived signed URLs) ---- */
+.vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.vcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); overflow: hidden; }
+.vthumb { display: block; width: 100%; aspect-ratio: 4 / 3; background: var(--paper-2); text-decoration: none; }
+.vthumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.vdoc { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--ink-soft); }
+.vdoc-ico { font-size: 34px; line-height: 1; }
+.vdoc-open { font-size: 12px; color: var(--ink-soft); }
+.vmissing { color: var(--dim); }
+.vmissing .vdoc-open { color: var(--dim); }
+.vmeta { padding: 10px 12px; }
+.vm-mime { font-size: 12px; margin: 0; color: var(--ink); word-break: break-all; }
+.vm-sub { font-size: 12px; margin: 3px 0 0; color: var(--ink-soft); }
+.vm-date { font-size: 11px; margin: 3px 0 0; color: var(--dim); }
+.tag { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: var(--r-pill); }
+.tag.live { background: rgba(75,122,90,.16); color: #2E5A40; }         /* 🟢 sage */
+.tag.proactive { background: rgba(182,128,42,.18); color: #6E521A; }   /* 🟡 honey */
+.tag.soon { background: var(--paper-2); color: var(--ink-faint); }
+.btn { background: var(--clay); color: #FFFDF9; border: none; border-radius: var(--r-13); padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn:hover:not(:disabled) { background: var(--clay-deep); }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn.ghost { background: var(--paper-2); color: var(--ink); border: 1px solid var(--line-2); }
+.btn.ghost:hover:not(:disabled) { background: #EBE2D3; }
+.btn.danger { background: var(--rust); color: #FFFDF9; }
+.btn.danger:hover:not(:disabled) { background: #8A3E2D; }
+.btnrow { display: flex; gap: 8px; }
+.decided { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+.brief { white-space: pre-wrap; background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--r-13); padding: 14px; margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--ink); font-family: inherit; }
+
+/* ---- Login (the lock screen) ---- */
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--paper); }
+.login-card { width: 100%; max-width: 360px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-20); padding: 26px 24px; box-shadow: 0 10px 40px rgba(33,28,22,.06); }
+.login-input { width: 100%; box-sizing: border-box; background: var(--paper); border: 1px solid var(--line-2); border-radius: var(--r-13); padding: 12px 13px; font-size: 15px; color: var(--ink); }
+.login-input:focus { outline: none; border-color: var(--clay); box-shadow: 0 0 0 3px var(--clay-tint); }
+.login-error { color: #8A3E2D; font-size: 13px; margin: 10px 0 0; line-height: 1.5; }
+
+/* ---- Two-row dashboard: money row lives in .grid; funnel above it ---- */
+.rowlabel { font-size: 13px; color: var(--ink-soft); font-weight: 600; margin: 0 0 10px; }

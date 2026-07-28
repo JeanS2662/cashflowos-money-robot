@@ -1,0 +1,6 @@
+{
+  "//": "1 of 2 Hobby cron slots used; the 2nd is reserved on purpose. Vercel Hobby allows max 2 crons at once-per-day granularity — this repo ships exactly ONE (the merged daily digest + brief + scheduled-agent sweep).",
+  "crons": [
+    { "path": "/api/cron-daily", "schedule": "0 1 * * *" }
+  ]
+}

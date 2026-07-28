@@ -51,6 +51,16 @@ const threshold = () => {
   return Number.isFinite(n) && n > 0 ? n : 200
 }
 
+// Spells out the next 7 days as "Wed 2026-07-29 · Thu 2026-07-30 · ..." so the model
+// never has to work out which date a weekday falls on — it only has to read one off
+// the list. Without this it guesses, and "Friday" lands on the wrong day (or year).
+const weekDatesLine = () =>
+  Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(Date.now() + (i + 1) * 86_400_000)
+    const day = d.toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' })
+    return `${day} ${d.toISOString().slice(0, 10)}`
+  }).join(' · ')
+
 // Cost guard: how many vision reads one chat may trigger per day. Keeps a stuck
 // or spammy sender from burning your Anthropic credit. Resets each day (no cron).
 const VISION_DAILY_CAP = 20
@@ -349,8 +359,10 @@ async function answerWithTools(chatId: number, text: string, apiKey: string): Pr
     `triage) and ACTION tools that DO things. Chain tools when useful (e.g. who_to_followup → ` +
     `draft_followup; or find an invoice → mark_invoice_paid). Keep replies short. Telegram formatting: ` +
     `<b>,<i>,<code> only.\n` +
-    `TODAY is ${todayISO()} (ISO yyyy-mm-dd). Resolve every relative date — "today", "tomorrow", ` +
-    `"Friday", "next week", "end of month" — against THIS date. Never infer the date from anything else.\n` +
+    `TODAY is ${todayISO()}, a ${new Date().toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' })}. ` +
+    `This week runs ${weekDatesLine()}. Resolve every relative date — "today", "tomorrow", "Friday", ` +
+    `"next week", "end of month" — against THESE dates, and never infer the date from anything else. ` +
+    `A named weekday with no "next" means the SOONEST upcoming one (today counts).\n` +
     `GROUNDING: always base money/pipeline answers on a tool result — never guess a number.\n` +
     `ACTING — the autonomy dial: for add_task / add_lead / a small log_expense the tool runs it ` +
     `immediately; tell the owner it's done and include the exact /undo-<id> the tool returned. For ` +

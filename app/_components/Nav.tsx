@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation'
 export const NAV_GROUPS: { label: string; tabs: { href: string; label: string }[] }[] = [
   { label: 'Overview', tabs: [
     { href: '/', label: 'Dashboard' },
+    { href: '/calendar', label: 'Calendar' },
   ] },
   { label: 'Money', tabs: [
     { href: '/invoice', label: 'Invoice' },

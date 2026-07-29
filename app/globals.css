@@ -241,6 +241,65 @@ code {
 /* Safety: never let the sheet linger if the viewport grows to desktop mid-open. */
 @media (min-width: 769px) { .ms-backdrop { display: none !important; } }
 
+/* ============================================================
+   CALENDAR — every dated row in `records` on one timeline.
+   Month grid on desktop, day-by-day list ≤768px. Both are rendered by
+   app/calendar/page.tsx and swapped here, so neither needs JavaScript.
+   ============================================================ */
+.cal-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.cal-month { font-size: 15px; font-weight: 700; margin: 0; color: var(--ink); min-width: 148px; }
+.cal-arrow { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border: 1px solid var(--line-2); border-radius: var(--r-8); text-decoration: none; color: var(--ink-soft); font-size: 15px; }
+.cal-arrow:hover { background: rgba(33,28,22,.05); color: var(--ink); }
+.cal-today-link { margin-left: auto; flex-shrink: 0; font-size: 13px; font-weight: 600; text-decoration: none; color: var(--clay-deep); border: 1px solid var(--clay); border-radius: var(--r-pill); padding: 5px 13px; }
+.cal-today-link:hover { background: var(--clay-tint); }
+
+.cal-legend { display: flex; flex-wrap: wrap; gap: 6px 15px; list-style: none; margin: 0 0 14px; padding: 0; }
+.cal-legend li { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-soft); }
+.cal-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; background: var(--line-2); }
+
+/* one colour per kind, shared by the legend dot, the grid chip and the list row */
+.cal-dot.cash_in,  .cal-chip.cash_in,  .cal-item.cash_in  { --cal-c: var(--sage); }
+.cal-dot.cash_out, .cal-chip.cash_out, .cal-item.cash_out { --cal-c: var(--honey); }
+.cal-dot.task,     .cal-chip.task,     .cal-item.task     { --cal-c: var(--f-views); }
+.cal-dot.content,  .cal-chip.content,  .cal-item.content  { --cal-c: var(--f-appts); }
+.cal-dot { background: var(--cal-c, var(--line-2)); }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-13); overflow: hidden; }
+.cal-dow { background: var(--paper-2); padding: 8px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); }
+.cal-day { background: var(--card); min-height: 106px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cal-day.pad { background: var(--paper-2); }        /* days either side of the month */
+.cal-dnum { font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.cal-day.today { background: var(--clay-tint); }
+.cal-day.today .cal-dnum { color: var(--clay-deep); }
+
+.cal-chip { display: block; font-size: 11.5px; line-height: 1.35; padding: 3px 6px; border-radius: var(--r-8); border-left: 3px solid var(--cal-c, var(--line-2)); background: var(--paper-2); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-more { font-size: 11px; color: var(--dim); padding-left: 6px; }
+.cal-none { color: var(--dim); font-size: 13px; margin: 0 0 14px; }
+
+/* the phone view — hidden until ≤768px */
+.cal-list { display: none; }
+.cal-dayrow { margin-bottom: 18px; }
+.cal-dhead { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 8px; }
+.cal-todaytag { background: var(--clay); color: #FFFDF9; border-radius: var(--r-pill); padding: 2px 8px; font-size: 10px; letter-spacing: 0; }
+.cal-item { display: flex; align-items: flex-start; gap: 10px; background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--cal-c, var(--line-2)); border-radius: var(--r-13); padding: 11px 13px; margin-bottom: 8px; }
+.cal-ico { font-size: 17px; line-height: 1.25; flex-shrink: 0; }
+.cal-t { font-size: 14px; margin: 0; color: var(--ink); }
+.cal-s { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--dim); margin: 4px 0 0; }
+
+/* 🔴 overdue outranks the kind colour — it's the thing you must not miss. */
+.cal-chip.od { border-left-color: var(--rust); background: rgba(169,83,63,.12); color: #8A3E2D; font-weight: 600; }
+.cal-item.od { border-left-color: var(--rust); }
+/* finished work stays on the calendar as history, dimmed out of the way. */
+.cal-chip.done, .cal-item.done { opacity: 0.45; }
+.cal-chip.done { text-decoration: line-through; font-weight: 400; }
+.cal-item.done .cal-t { text-decoration: line-through; }
+
+@media (max-width: 768px) {
+  .cal-grid { display: none; }             /* the month grid is desktop-only */
+  .cal-list { display: block; }
+  .cal-month { font-size: 14px; min-width: 0; }
+}
+
 /* ---- AI Employees registry cards ---- */
 .agent-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-13); padding: 16px 18px; margin-bottom: 12px; }
 .ac-name { font-size: 15px; font-weight: 700; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--ink); }

@@ -50,7 +50,7 @@ export const AGENTS: AgentMeta[] = [
     key: 'cold-lead',
     label: 'Cold-Lead Follow-up',
     emoji: '🎯',
-    autonomyNote: '🟡 Daily: drafts a nudge for leads quiet > 3 days. You send it.',
+    autonomyNote: '🟡 Daily: drafts a nudge when a lead’s next step falls due within 2 days. You send it.',
   },
   {
     key: 'content-approval',
@@ -338,4 +338,63 @@ const overdueInvoiceCheck: ScheduledCheck = {
       }),
 }
 
-export const SCHEDULED: ScheduledCheck[] = [overdueInvoiceCheck]
+// Sales · Cold-Lead Follow-up: a live lead whose NEXT ACTION falls due within the
+// next couple of days (or is already past) → draft a warm nudge for the owner to send.
+//
+// Why not "days since last contact", like the gallery brief says? Because these lead
+// rows carry no last-contact field — they carry the next step (`meta.next`, e.g.
+// "run demo") and the date it's due (`due_date`). Chasing off the next action is both
+// the signal that actually exists here AND the earlier warning: it catches a lead just
+// before it goes quiet rather than a week after. DRAFT only — the robot never messages
+// a lead (🔴), the closer presses send.
+const CHASE_WINDOW_DAYS = 2
+
+// "Danial Haikal — Haikal Motors" → "Danial". Falls back to the whole title.
+const firstName = (title: string) => (title || '').split('—')[0].trim().split(/\s+/)[0] || title
+
+// Turn the terse next-step tag into something that reads like a human wrote it.
+const NEXT_PHRASE: Record<string, string> = {
+  'run demo': 'getting that demo done',
+  'book demo': 'getting a demo into the diary',
+  'discovery call': 'our discovery call',
+  qualify: 'a quick chat to see if we’re a good fit',
+  'send quote': 'getting that quote over to you',
+  'send info pack': 'sending over the info pack',
+  'monthly check-in': 'checking in',
+}
+
+const coldLeadCheck: ScheduledCheck = {
+  key: 'cold-lead',
+  label: 'Cold-Lead Follow-up',
+  check: (rows, today) =>
+    rows
+      .filter(
+        (r) =>
+          r.category === 'lead' &&
+          (r.status || '').toLowerCase() !== 'closed' &&
+          !!r.due_date &&
+          // daysPast is positive once overdue, negative while still ahead of us.
+          daysPast(r.due_date, today) >= -CHASE_WINDOW_DAYS,
+      )
+      .map((r) => {
+        const next = String(r.meta?.next || '').toLowerCase()
+        const phrase = NEXT_PHRASE[next] || next || 'picking this back up'
+        const late = daysPast(r.due_date, today)
+        const when = late > 0 ? `${late}d overdue` : late === 0 ? 'due today' : `due ${r.due_date}`
+        return {
+          idempotencyKey: `cold-lead:${r.id}:${today}`,
+          payload: {
+            row_id: r.id,
+            channel: 'whatsapp',
+            text:
+              `Hi ${firstName(r.title)}, hope you’re doing well! Just circling back about ` +
+              `${phrase}. Are you around this week? Happy to work around whatever suits you.`,
+          },
+          text:
+            `🎯 Lead cooling: <b>${r.title}</b> — ${r.meta?.next || 'follow up'} ${when} ` +
+            `(${rm(r.amount)}). Draft a nudge for you to send?`,
+        }
+      }),
+}
+
+export const SCHEDULED: ScheduledCheck[] = [overdueInvoiceCheck, coldLeadCheck]
